@@ -1,4 +1,5 @@
-Measurement Ca release and Cells synchronicity - Humsa Venkatesh
+Mapping the mesh of the enteric nervous system - Julieta Gomez-Frittelli
+and Subhamoy Das from Julia Kaltschmidt lab
 ==================================
 
 ## Work in progress
