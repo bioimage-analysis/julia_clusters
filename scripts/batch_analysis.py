@@ -23,10 +23,13 @@ def batch_analysis(path, **kwargs):
     for file in imfilelist:
 
         javabridge.start_vm(class_path=bioformats.JARS)
-        _, directory, mip, meta = io.load_bioformats(file)
-        local_maxi, labels, gauss = processing.clusters(mip, plot=False)
-        del mip
-        ganglion_prop = processing.segmentation(gauss, local_maxi, labels, meta,
-                                                directory, plot = False,save = True)
-        del gauss
-        analysis.create_dataframe(ganglion_prop, local_maxi, meta, directory, save=True)
+        _, series = io._metadata(file)
+        for serie in range(series):
+
+            _, directory, mip, meta = io.load_bioformats(file, serie = serie)
+            local_maxi, labels, gauss = processing.clusters(mip, plot=False)
+            del mip
+            ganglion_prop = processing.segmentation(gauss, local_maxi, labels, meta,
+                                                    directory, plot = False,save = True)
+            del gauss
+            analysis.create_dataframe(ganglion_prop, local_maxi, meta, directory, save=True)

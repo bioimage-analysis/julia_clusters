@@ -4,34 +4,36 @@ import os
 import time
 
 
-def _metadata(path):
+def _metadata(path, serie = 0):
     xml = bioformats.get_omexml_metadata(path)
     md = bioformats.omexml.OMEXML(xml)
 
-    meta={'AcquisitionDate': md.image().AcquisitionDate}
-    meta['Name']=md.image().Name.replace(' ', '_')
-    meta['SizeC']=md.image().Pixels.SizeC
-    meta['SizeT']=md.image().Pixels.SizeT
-    meta['SizeX']=md.image().Pixels.SizeX
-    meta['SizeY']=md.image().Pixels.SizeY
-    meta['SizeZ']=md.image().Pixels.SizeZ
-    meta['PhysicalSizeX'] = md.image().Pixels.PhysicalSizeX
-    meta['PhysicalSizeY'] = md.image().Pixels.PhysicalSizeY
-    meta['PhysicalSizeZ'] = md.image().Pixels.PhysicalSizeZ
+    series = md.image_count
 
-    return(meta)
+    meta={'AcquisitionDate': md.image(serie).AcquisitionDate}
+    meta['Name']=md.image(serie).Name.replace(' ', '_')
+    meta['SizeC']=md.image(serie).Pixels.SizeC
+    meta['SizeT']=md.image(serie).Pixels.SizeT
+    meta['SizeX']=md.image(serie).Pixels.SizeX
+    meta['SizeY']=md.image(serie).Pixels.SizeY
+    meta['SizeZ']=md.image(serie).Pixels.SizeZ
+    meta['PhysicalSizeX'] = md.image(serie).Pixels.PhysicalSizeX
+    meta['PhysicalSizeY'] = md.image(serie).Pixels.PhysicalSizeY
+    meta['PhysicalSizeZ'] = md.image(serie).Pixels.PhysicalSizeZ
+
+    return(meta, series)
 
 
 
-def load_bioformats(path):
-    meta = _metadata(path)
+def load_bioformats(path, serie = 0):
+    meta, _ = _metadata(path, serie = serie)
     image = np.empty((meta['SizeT'], meta['SizeZ'], meta['SizeX'], meta['SizeY'], meta['SizeC']))
 
     with bioformats.ImageReader(path) as rdr:
         for t in range(0, meta['SizeT']):
             for z in range(0, meta['SizeZ']):
                 for c in  range(0, meta['SizeC']):
-                    image[t,z,:,:,c]=rdr.read(c=c, z=z, t=t, series=None,
+                    image[t,z,:,:,c]=rdr.read(c=c, z=z, t=t, series=serie,
                                                  index=None, rescale=False, wants_max_intensity=False,
                                                  channel_names=None)
     img = np.squeeze(image)
